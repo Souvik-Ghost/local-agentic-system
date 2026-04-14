@@ -1,0 +1,26 @@
+# Disposable Sandbox for Autonomous Operations
+# Used to contain agentic actions using MicroVM/WSL2 isolated boundaries
+FROM ubuntu:24.04
+
+# Set non-interactive to avoid prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install core tools required for the sandbox
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user for safe operation
+RUN useradd -m -s /bin/bash agent && \
+    echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER agent
+WORKDIR /home/agent/workspace
+
+# Keep the sandbox alive
+CMD ["tail", "-f", "/dev/null"]

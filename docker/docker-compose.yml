@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  agent-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    container_name: local-agent-sandbox
+    # Mirrored networking provides WSL2 integration for the agent
+    network_mode: "host" 
+    volumes:
+      # Mount the memory and learning directories for continuity
+      - ../.learnings:/home/agent/.learnings
+      - ../memory-vault:/home/agent/memory-vault
+      # An execution directory isolated from the core code
+      - ./sandbox_exec:/home/agent/workspace
+    restart: unless-stopped
